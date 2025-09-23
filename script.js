@@ -4,6 +4,12 @@ const balle = {
     rayon : 20,
 };
 
+const raquette = {
+    x : 200,
+    y : 580,
+    taille : 100,
+}
+
 let sysdate = new Date();
 let startTime = sysdate.getTime();
 startButton = document.getElementById("StartButton")
@@ -24,10 +30,22 @@ function dessinerBalle() {
     ctx.closePath();
 }
 
-dessinerBalle();
-
-
-for(let j = 100; j > 0; j--){
-    balle.y -= 1;
-    setTimeout(dessinerBalle(),1000);
+function dessinerRaquette(){
+    ctx.beginPath();
+    ctx.moveTo(raquette.x / 2, raquette.y);
+    ctx.lineTo(raquette.x / 2 * 3, raquette.y);
+    ctx.fillStyle = 'blue';
+    ctx.lineWidth = 10,
+    ctx.stroke();
+    ctx.closePath();
 }
+
+function moveBall(){
+    for(let i = 0; i <200; i++){
+        balle.y-= 1;
+        requestAnimationFrame(dessinerBalle(), 100);
+    }
+}
+
+setTimeout(dessinerBalle(),10);
+setTimeout(dessinerRaquette(), 10);
