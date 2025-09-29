@@ -7,17 +7,20 @@ const balle = {
 };
 
 const raquette = {
-    x : 250,
+    x : 150,
     y : 580,
-    taille : 30,
+    taille : 100,
 };
 
 let boucleJeu;
 
 function afficheTemps(){
-    let time = parseInt(document.getElementById("timer").textContent);
-    time += 1;
-    document.getElementById("timer").textContent = time;
+    // let time = parseInt(document.getElementById("timer").textContent);
+    // time += 1 / 24;
+    // document.getElementById("timer").textContent = time;
+
+    let Starttime = Date.now();
+    document.getElementById("timer").textContent = Starttime - Date.now();
 }
 
 const canvas = document.getElementById('gameCanvas');
@@ -35,7 +38,7 @@ function dessinerBalle() {
 function dessinerRaquette(){
     
     ctx.beginPath();
-    ctx.moveTo(raquette.x / 2, raquette.y);
+    ctx.moveTo(raquette.x , raquette.y);
     ctx.lineTo(raquette.x + raquette.taille, raquette.y);
     ctx.fillStyle = 'blue';
     ctx.lineWidth = 7,
@@ -46,7 +49,7 @@ function dessinerRaquette(){
 function moveBall(){
     if(!collide()){
         let r = Math.random();
-         balle.y += balle.speedy;
+        balle.y += balle.speedy;
         balle.x += balle.speedx;
     }
 
@@ -55,7 +58,7 @@ function moveBall(){
         alert("Partie perdue, votre score :");
         location.reload();
     }
-    if(balle.y <= 0 + balle.rayon || collide()){
+    if(balle.y <= balle.rayon || collide()){
         balle.speedy *= -1;
     }
 
@@ -65,10 +68,47 @@ function moveBall(){
 }
 
 function collide() {
-    if(balle.y + balle.rayon - 2 >= raquette.y && balle.x + balle.rayon >= raquette.x && balle.x + balle.x <= raquette.x + raquette.taille){
+    if(balle.y + balle.rayon >= raquette.y && balle.x >=
+        raquette.x && balle.x <= raquette.x + raquette.taille){
         console.log("true");
+        balle.speedx *= -1;
+        balle.speedy *= -1;
+    }
+
+    if(balle.y >= raquette.y - 10){
+        console.log('Y');
+        if(balle.x >= raquette.x  ){
+            console.log('X');
+            console.log('balle :' + balle.x + 'raquette  :' + raquette.x)
+        }
+    }
+        
+}
+
+const keys = {}
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        keys[e.key] = true;
+        e.preventDefault(); // empêche le défilement de la page
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        keys[e.key] = false;
+    }
+});
+
+function bougerRaquette(){
+    const vitesse = 5;
+    if (keys['ArrowLeft'] && raquette.x > 0 ) {
+        raquette.x = raquette.x - vitesse;
+    }
+    if (keys['ArrowRight'] && raquette.x + raquette.taille < canvas.width) {
+        raquette.x = raquette.x + vitesse;
     }
 }
+
 
 dessinerBalle();
 dessinerRaquette();
@@ -77,6 +117,7 @@ function loop(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     dessinerBalle();
     dessinerRaquette();
+    bougerRaquette();
     moveBall();
     collide();
     boucleJeu = requestAnimationFrame(loop);
