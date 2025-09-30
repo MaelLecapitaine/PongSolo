@@ -9,18 +9,20 @@ const balle = {
 const raquette = {
     x : 150,
     y : 580,
-    taille : 100,
+    taille : 80,
 };
 
 let boucleJeu;
 
+let Starttime = Date.now();
+
 function afficheTemps(){
     // let time = parseInt(document.getElementById("timer").textContent);
-    // time += 1 / 24;
+    // time += 1;
     // document.getElementById("timer").textContent = time;
 
-    let Starttime = Date.now();
-    document.getElementById("timer").textContent = Starttime - Date.now();
+    
+    document.getElementById("timer").textContent = Math.round((Date.now() - Starttime) / 1000);
 }
 
 const canvas = document.getElementById('gameCanvas');
@@ -55,7 +57,7 @@ function moveBall(){
 
     if(balle.y >= (canvas.height - balle.rayon) || balle.x == 0){
         balle.speedy = balle.speedy * -1;
-        alert("Partie perdue, votre score :");
+        alert("Partie perdue, votre score : " + document.getElementById("timer").textContent);
         location.reload();
     }
     if(balle.y <= balle.rayon || collide()){
@@ -70,9 +72,14 @@ function moveBall(){
 function collide() {
     if(balle.y + balle.rayon >= raquette.y && balle.x >=
         raquette.x && balle.x <= raquette.x + raquette.taille){
-        console.log("true");
         balle.speedx *= -1;
-        balle.speedy *= -1;
+        if(balle.speedy >= 4){
+            balle.speedy *= -0.7;
+        }
+        else{
+            balle.speedy *= -1.2;
+        }
+        
     }
 
     if(balle.y >= raquette.y - 10){
@@ -86,6 +93,7 @@ function collide() {
 }
 
 const keys = {}
+
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         keys[e.key] = true;
@@ -99,9 +107,25 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
+document.getElementById("rightButton").addEventListener('pointerdown', function() {
+    keys['ArrowRight'] = true;
+})
+
+document.getElementById("rightButton").addEventListener('pointerup', function() {
+    keys['ArrowRight'] = false;
+})
+
+document.getElementById("leftButton").addEventListener('pointerdown', function() {
+    keys['ArrowLeft'] = true;
+})
+
+document.getElementById("leftButton").addEventListener('pointerup', function() {
+    keys['ArrowLeft'] = false;
+})
+
 function bougerRaquette(){
     const vitesse = 5;
-    if (keys['ArrowLeft'] && raquette.x > 0 ) {
+    if ((keys['ArrowLeft']) && raquette.x > 0 ) {
         raquette.x = raquette.x - vitesse;
     }
     if (keys['ArrowRight'] && raquette.x + raquette.taille < canvas.width) {
@@ -120,6 +144,7 @@ function loop(){
     bougerRaquette();
     moveBall();
     collide();
+    afficheTemps()
     boucleJeu = requestAnimationFrame(loop);
 }
 
